@@ -1,6 +1,7 @@
 import express from "express";
 import dotenv from "dotenv";
 import mongoose from "mongoose";
+import cors from "cors";
 import productRouter from "./routers/productRouter.js";
 import userRouter from "./routers/userRouter.js";
 import orderRouter from "./routers/orderRouter.js";
@@ -9,19 +10,17 @@ import verifyRouter from "./routers/verifyRouter.js";
 dotenv.config();
 
 const app = express();
+app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 if (process.env.NODE_ENV == "production") {
   app.use(express.static("frontend/build"));
 }
-mongoose.connect(
-  process.env.MONGODB_URL, 
-  {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  }
-);
+mongoose.connect(process.env.MONGODB_URL, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+});
 
 app.use("/api/users", userRouter);
 app.use("/api/user", verifyRouter);
@@ -37,8 +36,6 @@ app.use((err, req, res, next) => {
 
 const port = process.env.PORT || 5000;
 
-
 app.listen(port, () => {
   console.log(`Server at http://localhost:${port}`);
 });
-
